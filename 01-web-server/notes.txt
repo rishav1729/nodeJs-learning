@@ -1,0 +1,11 @@
+http.createServer
+
+.listen
+
+req.url =>  This object contains the full URL string, including the query string. 
+             When a user makes a request, the req.url object will contain the specific path or URL they accessed. 
+             For example, if a user requests example.com/search?q=node.js, the req.url object will be '/search?q=node.js'
+
+res.statusCode => Sets the HTTP status code for the response sent to the client.
+res.setHeader => Adds a single header or updates its value if it already exists in the response.
+res.end => Concludes the response process, optionally sending data before closing.
