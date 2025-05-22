@@ -10,8 +10,8 @@
     - so here for every/any route or you can say any request (http://localhost:3000/     http://localhost:3000/test    http://localhost:3000/hello) it will responsd the same => Response from the server, because we have not route in app.use, we have to provide a route and its appropriate response => app.use("/test,(req,res)=>{}) => now we have a req.  handler to route /test now this(http://localhost:3000/test) will responde according to the code
 
 - routes => 
-    - lets take three routes "/" "/test" and "/test"
-        case1: order "/" "/test" and "/test" => if we hit either "/test" or "/hello" response will come from "/" request handler only
+    - lets take three routes "/" "/test" and "/test"  
+        case1: order "/" "/test" and "/test" => if we hit either "/test" or "/hello" response will come from "/" request handler only  
         case2: order "/test" "/" and "/test" => if we hit "/" first and then "/test" it will return the "/test" response as it is defined befor "/" but for "/test" it will return the response of "/" only, why because anything after "/" will be considered as "/"only it can be "/////afdsf/sdggfgf" also
     - order of the routes matter
     - Q. "/test/bkhvhv/sdgfsd" retuns? => "/test" response
@@ -27,5 +27,18 @@
     - [detail-explanation](/devtinder/detail-explanation/app.get-vs-app.post.md)
 
 - advanced routing pattern
-    - /abc
-    
+    - /abc  
+    - /ab?c => /ac => works
+    - /ab+c => /abbbbbbbbbbbbbbbc => works
+    - /ab*c => /absfgdfjgkhfjsgdc => works
+    - /a(bc)+d => /abcbcbcbcbcbcbcbd => works
+    - /a(bc)?d => /ad => works but /acd or /abd will throw error
+    - we can include complex regex also in routes
+
+- dynamic route => /user/:id/:name/:password             localhost:3000/user/101/rishav/rishavpassword
+    - in req.params we will get {id:'101', name:'rishav', password:'rishavpassword'}
+    - used to make route dynamic, Use route params for resource identity.
+
+- query params => /user                                  localhost:3000/user?id=101&name=rishav&password=rishavpassword 
+    - in req.query we get {id:'101', name:'rishav', password:'rishavpassword'}
+    - Use query params for search, filter, options, pagination.
