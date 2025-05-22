@@ -1,1 +1,1 @@
- 
+- when you create a server, you will listen on the server, then you will accpeting the incoming request outside the world [server-client](https://excalidraw.com/#json=yYHaeHT7hSA_2GC1PU_Ur,xki97Lsejz2Q_Dhepxt_Qg)
