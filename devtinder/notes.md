@@ -35,10 +35,10 @@
     - /a(bc)?d => /ad => works but /acd or /abd will throw error
     - we can include complex regex also in routes
 
-- dynamic route => /user/:id/:name/:password             localhost:3000/user/101/rishav/rishavpassword
+- dynamic route => /user/:id/:name/:password   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          localhost:3000/user/101/rishav/rishavpassword
     - in req.params we will get {id:'101', name:'rishav', password:'rishavpassword'}
     - used to make route dynamic, Use route params for resource identity.
 
-- query params => /user                                  localhost:3000/user?id=101&name=rishav&password=rishavpassword 
+- query params => /user           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                       localhost:3000/user?id=101&name=rishav&password=rishavpassword 
     - in req.query we get {id:'101', name:'rishav', password:'rishavpassword'}
     - Use query params for search, filter, options, pagination.
