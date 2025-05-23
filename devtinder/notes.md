@@ -3,8 +3,8 @@
 - basic server creatiion code [basic-server](/devtinder/assests/basic-server.png)
     - we are not handling any incoming request here
 
-- to handle incoming request we have to use app.use and then pass a function inside it and this function takes request and response as a parameter,
-    - and we have to send a response back, normally using app.send() , and this whole function is called request handler, only the func. not app.use
+- to handle incoming request we have to use app.use (app.use can handle all method, here we can have app.post, app.get ....) and then pass a function inside it and this function takes request and response as a parameter,
+    - and we have to send a response back, normally using app.send() , and this whole function is called request handler, only the func. not app.use (if we are not sending and respose back then the client will continusly sends the request in hope of response)
     - when we run the server now it will respond and we can see the response in the browser at localhost:3000, only when the server is running
     - [reponse-from-server-code](/devtinder/assests/response-from-server-cdoe.png)  [reponse-from-server-browser](/devtinder/assests/response-from-server-browser.png)
     - so here for every/any route or you can say any request (http://localhost:3000/     http://localhost:3000/test    http://localhost:3000/hello) it will responsd the same => Response from the server, because we have not route in app.use, we have to provide a route and its appropriate response => app.use("/test,(req,res)=>{}) => now we have a req.  handler to route /test now this(http://localhost:3000/test) will responde according to the code
@@ -35,10 +35,22 @@
     - /a(bc)?d => /ad => works but /acd or /abd will throw error
     - we can include complex regex also in routes
 
-- dynamic route => /user/:id/:name/:password   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          localhost:3000/user/101/rishav/rishavpassword
+- dynamic route => /user/:id/:name/:password&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;          localhost:3000/user/101/rishav/rishavpassword
     - in req.params we will get {id:'101', name:'rishav', password:'rishavpassword'}
     - used to make route dynamic, Use route params for resource identity.
 
-- query params => /user           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                       localhost:3000/user?id=101&name=rishav&password=rishavpassword 
+- query params => /user&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                       localhost:3000/user?id=101&name=rishav&password=rishavpassword 
     - in req.query we get {id:'101', name:'rishav', password:'rishavpassword'}
     - Use query params for search, filter, options, pagination.
+
+### Route handeler and middelware
+- one route can have multiple route handlers
+- You can attach multiple middleware or handlers to a route. They execute in order. But once you send a response (res.send(), res.json(), etc.), the connection is closed—further handlers won't run unless you're just logging (not responding).
+- 1. Once res.send() is called, the response ends
+    - No further route handlers will run after that, even if next() is called.
+- 2. Use next() only if you’re not sending a response yet
+    - Only middleware (not final handlers) should call next() to pass control.
+- 3. If you call next() but don’t send any response later, the request will hang or give "Cannot GET" error
+    - Always ensure the last handler sends a response.
+- we can also have route handlers inside array also ( app.get(/route,[rh1,rh2,rh3,rh4,rh5]), app.get(/route,rh1,[rh2,rh3],rh4,rh5))
+- [for detail explanation](/devtinder/detail-explanation/multiple-route-handler.md)
