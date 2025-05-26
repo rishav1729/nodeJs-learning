@@ -63,3 +63,18 @@
         - [without-middleware](/devtinder/assests/without-middleware.png)
         - [with-middleware](/devtinder/assests/with-middleware.png)
         - [with-middleware-folder](/devtinder/assests/with-middleware-folder.png)
+
+
+###  Database, Schema & Models  Mongoose
+- connect to the mongodb atlas cluster using connection string followed by the dadabase name
+- we need to connect to db before listening to the requests. see blelow -
+- ```
+    connectDB().then(() => {
+    console.log("successfully connected to db"); 
+    app.listen(3000, () => {
+    console.log("server is up and runnring...");
+})
+}).catch((err) => {
+    console.error("db connection failed");   
+    console.log("error :: ", err);
+})```
