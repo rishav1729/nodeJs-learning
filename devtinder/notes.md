@@ -43,7 +43,7 @@
     - in req.query we get {id:'101', name:'rishav', password:'rishavpassword'}
     - Use query params for search, filter, options, pagination.
 
-### Route handeler and middelware
+### Route handler and middelware
 - one route can have multiple route handlers
 - You can attach multiple middleware or handlers to a route. They execute in order. But once you send a response (res.send(), res.json(), etc.), the connection is closed—further handlers won't run unless you're just logging (not responding).
 - 1. Once res.send() is called, the response ends
@@ -54,3 +54,12 @@
     - Always ensure the last handler sends a response.
 - we can also have route handlers inside array also ( app.get(/route,[rh1,rh2,rh3,rh4,rh5]), app.get(/route,rh1,[rh2,rh3],rh4,rh5))
 - [for detail explanation](/devtinder/detail-explanation/multiple-route-handler.md)
+- Middlewares => 
+    - Middleware are not but way to do some processing that happens between the request (coming from the client) and the final response (sent by your server). The next() that we are talking about is the key that is doing all the thing.
+    - general purposes middlewares are used for : log requests, authenticate users, parse json data, validate i/p, catch errors etc.
+    - Middleware functions must call next() to move to the next stage. If not, the request will hang.
+    - lets, discuss authorize case => let' say we have two route /admin/getalldata and /admin/deleteuser but I want to run the logic and sent the res. but here we want to getalldata or deleteuser only when the user is authorize logic passes otherwise send error res.
+        - this can be done in two ways either write the same authorize logic in both route or in the only /admin route (2nd way is the good practice) here come main middleware part, call next() only when user is authorize.
+        - [without-middleware](/assests/without-middleware.png)
+        - [with-middleware](/assests/with-middleware.png)
+        - [with-middleware-folder](/assests/with-middleware-folder.png)
