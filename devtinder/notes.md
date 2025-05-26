@@ -60,6 +60,6 @@
     - Middleware functions must call next() to move to the next stage. If not, the request will hang.
     - lets, discuss authorize case => let' say we have two route /admin/getalldata and /admin/deleteuser but I want to run the logic and sent the res. but here we want to getalldata or deleteuser only when the user is authorize logic passes otherwise send error res.
         - this can be done in two ways either write the same authorize logic in both route or in the only /admin route (2nd way is the good practice) here come main middleware part, call next() only when user is authorize.
-        - [without-middleware](/assests/without-middleware.png)
-        - [with-middleware](/assests/with-middleware.png)
-        - [with-middleware-folder](/assests/with-middleware-folder.png)
+        - [without-middleware](/devtinder/assests/without-middleware.png)
+        - [with-middleware](/devtinder/assests/with-middleware.png)
+        - [with-middleware-folder](/devtinder/assests/with-middleware-folder.png)
