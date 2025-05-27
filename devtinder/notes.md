@@ -68,13 +68,56 @@
 ###  Database, Schema & Models  Mongoose
 - connect to the mongodb atlas cluster using connection string followed by the dadabase name
 - we need to connect to db before listening to the requests. see blelow -
-- ```
+- ```js
     connectDB().then(() => {
     console.log("successfully connected to db"); 
     app.listen(3000, () => {
     console.log("server is up and runnring...");
-})
-}).catch((err) => {
+    })
+    }).catch((err) => {
     console.error("db connection failed");   
     console.log("error :: ", err);
-})```
+    })```
+- for models best practices refer mongoose docs. [mongoose-docs](https://mongoosejs.com/docs/models.html)
+
+- model vs schema
+    | Concept | Purpose                            | Used For                                   |
+    | ------- | ---------------------------------- | ------------------------------------------ |
+    | Schema  | Defines the shape of the documents | Structure, validation, default values      |
+    | Model   | Represents a MongoDB collection    | Create/read/update/delete documents (CRUD) |
+
+
+- model
+    - there aare two ways to use/export model
+        - 1st=>
+       ```js
+        const User = mongoose.model("User", userSchema);
+        module.exports = User;
+        ```
+
+        - There are **two things** you’re referring to:
+        1. `"User"` — This is the **model name string**
+        - It's the **name of the collection** Mongoose will create (automatically pluralized and lowercased to `users`).
+        - Think of this as the **label** or **collection identifier** inside MongoDB.
+        > For example, `"User"` becomes `users` collection in MongoDB.
+
+        2. `User` — This is the **variable (Model instance)** in your JavaScript code
+        - This is what you'll use in your code to **interact with the database**.
+        - You use this `User` variable to run commands like:
+        ```js
+        const users = await User.find();
+        const newUser = new User({ name: 'Alice' });
+        ```
+        🧠 Summary:
+
+        | Term       | Meaning                                                                 |
+        |------------|-------------------------------------------------------------------------|
+        | `"User"`   | String name of the model (used internally by Mongoose/MongoDB)          |
+        | `User`     | JavaScript variable to interact with the model in code                  |
+        
+        - 2nd => 
+        ```js
+        module.exports = mongoose.model("User", userSchema);
+        ```
+    - for more details [click-here](/devtinder/detail-explanation/model-name-vs-model-instance.md)
+    
