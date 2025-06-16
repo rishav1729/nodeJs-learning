@@ -8,8 +8,12 @@ const app = express() //instance of express js application, this line create a w
 const {validateSignupData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
 const validator = require("validator")
+const jwt = require("jsonwebtoken")
+require('dotenv').config();
+const cookieParser = require("cookie-parser")
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async(req, res) => {
     try {
@@ -55,6 +59,14 @@ app.post("/login", async(req,res) => {
         const isPasswordValid = await bcrypt.compare(password, user.password); 
 
         if(isPasswordValid){
+
+            //logic of cookie and jwt token
+            //create a jwt token
+            const token = await jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
+            //add the token to the cookie and send it back to the user
+            res.cookie("token", token, {httpOnly: true, secure: true, maxAge: 3600000})
+
+
             res.send("login successful")
             console.log(user)
         }else{
@@ -67,6 +79,26 @@ app.post("/login", async(req,res) => {
 
 })
 
+app.get("/profile", async (req, res) => {
+    try {    
+        //read the cookie from the request
+        const cookies = req.cookies
+        //validate the token
+        //if token is not present, throw an error
+        const { token } = cookies
+        if (!token) {
+            throw new Error("unauthorized")
+        }
+        const decodedMessage =  await jwt.verify(token, process.env.JWT_SECRET)
+        //extract the user id from the decoded message
+        const {_id} = decodedMessage
+        //find the user in the database
+        const user = await User.findById(_id)
+        res.send(user);
+    } catch (err) {
+        res.status(400).send("Error : " + err.message)
+    }
+})
 
 app.get("/users", (req, res) => {
     res.send("users");
