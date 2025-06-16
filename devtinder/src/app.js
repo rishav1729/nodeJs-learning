@@ -6,7 +6,12 @@ const User = require("./models/user")
 const app = express() //instance of express js application, this line create a web server
                       //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
 
+
 app.use(express.json());
+
+app.profile("/profile",(req,res)=>{
+    
+})
 
 app.get("/users", (req, res) => {
     res.send("users");
@@ -21,12 +26,27 @@ app.delete("/users/:id", (req, res) => {
 })
 
 app.patch("/user/:userId", async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.params?.userId;
     const updateData = req.body;
+
     try {
-        const allowedUpdates = [ "profilePicture", "bio"];
-        const user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
-        res.send(user);
+        const allowedUpdates = ["profilePicture", "bio"];
+
+        const isUpdateAllowed = Object.keys(updateData).every((key)=>
+        allowedUpdates.includes(key)
+        )
+        if(!isUpdateAllowed){
+            throw new Error ("update not allowed")
+        }
+        if(updateData?.skills > 10){
+            throw new Error("Skills can not be more than  10")
+        }
+        const user = await User.findByIdAndUpdate({_id:userId}, updateData, {
+            returnDocument:"after",
+            runValidator:true
+        });
+        console.log(user);
+        res.send("update successful");
     } catch(err) {
         res.status(500).send("Error updating user: " + err.message);
     }

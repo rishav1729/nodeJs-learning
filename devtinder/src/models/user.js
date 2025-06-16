@@ -66,6 +66,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: 200
     },
+},
+{
+    timestamps: true,
 })  
 
 const User = mongoose.model("User", userSchema);
