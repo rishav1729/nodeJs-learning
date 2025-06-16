@@ -5,7 +5,7 @@ const connectDB = require("./config/database")
 const User = require("./models/user")   
 const app = express() //instance of express js application, this line create a web server
                       //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
-const validateSignupData = require("./utils/validation")
+const {validateSignupData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
 
 app.use(express.json());
@@ -37,6 +37,33 @@ app.post("/signup", async(req, res) => {
     }
 });
 
+app.post("/login", async(req,res) => {
+
+    try{
+        //extract emai and password
+        const{emailId, password} = req.body
+        //sanatise data
+        if(!validator.isEmail(emailId)){
+            throw new Error("invalid credentials")
+        }
+        //check the credetials from db
+        const user = await User.findOne({emailId: emailId})
+        if(!user){
+            throw new Error ("invalid credentials")
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password); 
+
+        if(isPasswordValid){
+            res.send("login successful")
+        }else{
+            throw new Error ("invalid credentials")
+        }
+    }
+    catch(err){
+        res.status(400).send("Error : " + err.message)
+    }
+
+})
 
 app.profile("/profile",(req,res)=>{
     

@@ -130,7 +130,7 @@
 
 - authentication
     - basic -> flow :
-        1. validation of data
+        1. validation of data (using helper function)
         2. encryt the password
         3. store the data 
     - jwt
