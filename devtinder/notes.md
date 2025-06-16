@@ -121,3 +121,8 @@
         ```
     - for more details [click-here](/devtinder/detail-explanation/model-name-vs-model-instance.md)
     
+- schema vs model vs instance of model
+    - Schema defines structure, model represents data, and an instance is a specific populated example of that model.
+    - Schema: Blueprint that defines the structure and rules of a document in a MongoDB collection.
+    - Model: A constructor compiled from the schema, used to create and manage documents.
+    - Instance: A single document (object) created using the model, representing one record in the database.
