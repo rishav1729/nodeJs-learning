@@ -7,33 +7,34 @@ const app = express() //instance of express js application, this line create a w
                       //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
 const {validateSignupData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const validator = require("validator")
 
 app.use(express.json());
 
 app.post("/signup", async(req, res) => {
-    try{
-    //validate the data, handles in helper function
-    validateSignupData(req)
-    //encrypt the passowrd
-    const {password} = req.body
-    const passwordHash = await bcrypt.hash(password, 10, function(err, hash) {
-        // Store hash in your password DB.
+    try {
+        //validate the data, handles in helper function
+        validateSignupData(req)
         
-    });
+        //extract all required fields
+        const {firstname, lastname, email, password} = req.body
+        
+        //encrypt the password
+        const passwordHash = await bcrypt.hash(password, 10);
 
-    //store the data
-    const user = new User({
-        firstName, 
-        lastName, 
-        emailId, 
-        password:passwordHash})
-
+        //store the data
+        const user = new User({
+            firstName: firstname, 
+            lastName: lastname, 
+            email: email, // map email to email field
+            password: passwordHash
+        })
 
         await user.save()
-        res.send("user added succesfully")
+        res.status(201).send("User added successfully")
 
-    }catch(err){
-        res.status(400).send("Error : " + err.message)
+    } catch(err) {
+        res.status(400).send("Error: " + err.message)
     }
 });
 
@@ -41,13 +42,13 @@ app.post("/login", async(req,res) => {
 
     try{
         //extract emai and password
-        const{emailId, password} = req.body
+        const{email, password} = req.body
         //sanatise data
-        if(!validator.isEmail(emailId)){
+        if(!validator.isEmail(email)){
             throw new Error("invalid credentials")
         }
         //check the credetials from db
-        const user = await User.findOne({emailId: emailId})
+        const user = await User.findOne({email: email})
         if(!user){
             throw new Error ("invalid credentials")
         }
@@ -55,6 +56,7 @@ app.post("/login", async(req,res) => {
 
         if(isPasswordValid){
             res.send("login successful")
+            console.log(user)
         }else{
             throw new Error ("invalid credentials")
         }
@@ -65,9 +67,6 @@ app.post("/login", async(req,res) => {
 
 })
 
-app.profile("/profile",(req,res)=>{
-    
-})
 
 app.get("/users", (req, res) => {
     res.send("users");

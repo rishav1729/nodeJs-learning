@@ -2,16 +2,22 @@ const validator = require("validator")
 
 
 const validateSignupData = (req) => {
-    const {firstName, lastName, emailId , password} = req.body;
+    const {firstname, lastname, email, password} = req.body;
 
-    if(!firstName||!lastName){
-        throw new Error("name is not valid")
+    if(!firstname || !lastname) {
+        throw new Error("First name and last name are required")
     }
-    else if(!validator.isEmail(emailId)){
-        throw new Error("invalid credential")
+    
+    if(firstname.length < 3 || lastname.length < 3) {
+        throw new Error("First name and last name must be at least 3 characters long")
     }
-    else if(!validator.isStrongPassword(password)){
-        throw new Error ("invalid credentials")
+    
+    if(!validator.isEmail(email)) {
+        throw new Error("Invalid email address format")
+    }
+    
+    if(!validator.isStrongPassword(password)) {
+        throw new Error("Password must be strong (min 8 chars, include uppercase, lowercase, number and symbol)")
     }
 } 
 
