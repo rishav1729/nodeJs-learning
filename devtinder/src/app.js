@@ -5,9 +5,38 @@ const connectDB = require("./config/database")
 const User = require("./models/user")   
 const app = express() //instance of express js application, this line create a web server
                       //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
-
+const validateSignupData = require("./utils/validation")
+const bcrypt = require("bcrypt")
 
 app.use(express.json());
+
+app.post("/signup", async(req, res) => {
+    try{
+    //validate the data, handles in helper function
+    validateSignupData(req)
+    //encrypt the passowrd
+    const {password} = req.body
+    const passwordHash = await bcrypt.hash(password, 10, function(err, hash) {
+        // Store hash in your password DB.
+        
+    });
+
+    //store the data
+    const user = new User({
+        firstName, 
+        lastName, 
+        emailId, 
+        password:passwordHash})
+
+
+        await user.save()
+        res.send("user added succesfully")
+
+    }catch(err){
+        res.status(400).send("Error : " + err.message)
+    }
+});
+
 
 app.profile("/profile",(req,res)=>{
     
@@ -52,11 +81,6 @@ app.patch("/user/:userId", async (req, res) => {
     }
 })
 
-app.post("/signup", (req, res) => {
-
-    console.log(req.body);
-    res.send("user created");
-});
 
 
 connectDB().then(() => {

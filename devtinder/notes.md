@@ -126,3 +126,23 @@
     - Schema: Blueprint that defines the structure and rules of a document in a MongoDB collection.
     - Model: A constructor compiled from the schema, used to create and manage documents.
     - Instance: A single document (object) created using the model, representing one record in the database.
+
+
+- authentication
+    - basic -> flow :
+        1. validation of data
+        2. encryt the password
+        3. store the data 
+    - jwt
+
+** bad practice - directly passing whole req.body /n 
+    ex : const user = new User(req.body) /n**
+
+** good practice - explicitly pass only the required parameter /n
+    ex : const user = new User({
+        firstName, 
+        lastName, 
+        emailId, 
+        password:passeordHash})**
+
+- so if any other field is passed in the postman it will be ignored , acts as an additional layer of security. 
