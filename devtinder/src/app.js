@@ -58,14 +58,14 @@ app.post("/login", async(req,res) => {
         if(!user){
             throw new Error ("invalid credentials")
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password); 
+        const isPasswordValid = await user.vlaidatePassword(password); 
 
         if(isPasswordValid){
 
             //logic of cookie and jwt token
             //create a jwt token
-            //we are hinding data(_id) in the jwt
-            const token = await jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"})
+            //offloading the logic to the schema modeland make a helper function and use it for that user instance.
+            const token = await user.getJWT();
             //add the token to the cookie and send it back to the user
             res.cookie("token", token, {httpOnly: true, secure: true, maxAge: 3600000}) 
 
