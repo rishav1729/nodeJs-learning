@@ -147,3 +147,13 @@
 
 - so if any other field is passed in the postman it will be ignored , acts as an additional layer of security. 
 
+- Cookie theory in short  : 
+    - Whenever a user is logging in, server will create a token attach it into a cookie and send back, now the cookie will be stored by the browser, any request which is coming up next cookie will be sent along and when the cookie will be sent along we will validate it once again and then do anything that i want to do in the application.
+    - to read/use the cookies we need to use middleware cookie-parser and use it globally like express.json
+
+- JWT :
+    - 
+    - 
+    - 
+    - create JWT : const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
+    - verify JWT : const decoded = jwt.verify(token, process.env.JWT_SECRET)

@@ -7,33 +7,38 @@ const app = express() //instance of express js application, this line create a w
                       //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
 const {validateSignupData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
+const validator = require("validator")
+const jwt = require("jsonwebtoken")
+require('dotenv').config();
+const cookieParser = require("cookie-parser")
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async(req, res) => {
-    try{
-    //validate the data, handles in helper function
-    validateSignupData(req)
-    //encrypt the passowrd
-    const {password} = req.body
-    const passwordHash = await bcrypt.hash(password, 10, function(err, hash) {
-        // Store hash in your password DB.
+    try {
+        //validate the data, handles in helper function
+        validateSignupData(req)
         
-    });
+        //extract all required fields
+        const {firstname, lastname, email, password} = req.body
+        
+        //encrypt the password
+        const passwordHash = await bcrypt.hash(password, 10);
 
-    //store the data
-    const user = new User({
-        firstName, 
-        lastName, 
-        emailId, 
-        password:passwordHash})
-
+        //store the data
+        const user = new User({
+            firstName: firstname, 
+            lastName: lastname, 
+            email: email, // map email to email field
+            password: passwordHash
+        })
 
         await user.save()
-        res.send("user added succesfully")
+        res.status(201).send("User added successfully")
 
-    }catch(err){
-        res.status(400).send("Error : " + err.message)
+    } catch(err) {
+        res.status(400).send("Error: " + err.message)
     }
 });
 
@@ -41,20 +46,29 @@ app.post("/login", async(req,res) => {
 
     try{
         //extract emai and password
-        const{emailId, password} = req.body
+        const{email, password} = req.body
         //sanatise data
-        if(!validator.isEmail(emailId)){
+        if(!validator.isEmail(email)){
             throw new Error("invalid credentials")
         }
         //check the credetials from db
-        const user = await User.findOne({emailId: emailId})
+        const user = await User.findOne({email: email})
         if(!user){
             throw new Error ("invalid credentials")
         }
         const isPasswordValid = await bcrypt.compare(password, user.password); 
 
         if(isPasswordValid){
+
+            //logic of cookie and jwt token
+            //create a jwt token
+            const token = await jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
+            //add the token to the cookie and send it back to the user
+            res.cookie("token", token, {httpOnly: true, secure: true, maxAge: 3600000})
+
+
             res.send("login successful")
+            console.log(user)
         }else{
             throw new Error ("invalid credentials")
         }
@@ -65,8 +79,25 @@ app.post("/login", async(req,res) => {
 
 })
 
-app.profile("/profile",(req,res)=>{
-    
+app.get("/profile", async (req, res) => {
+    try {    
+        //read the cookie from the request
+        const cookies = req.cookies
+        //validate the token
+        //if token is not present, throw an error
+        const { token } = cookies
+        if (!token) {
+            throw new Error("unauthorized")
+        }
+        const decodedMessage =  await jwt.verify(token, process.env.JWT_SECRET)
+        //extract the user id from the decoded message
+        const {_id} = decodedMessage
+        //find the user in the database
+        const user = await User.findById(_id)
+        res.send(user);
+    } catch (err) {
+        res.status(400).send("Error : " + err.message)
+    }
 })
 
 app.get("/users", (req, res) => {
