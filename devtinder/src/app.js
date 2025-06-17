@@ -3,14 +3,16 @@
 const express = require("express")
 const connectDB = require("./config/database")
 const User = require("./models/user")   
-const app = express() //instance of express js application, this line create a web server
-                      //when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
+//instance of express js application, this line create a web server
+//when we create a webserver, we have to call listen over there and we have to listen on some port, so that anybody can connect to us
+const app = express() 
 const {validateSignupData} = require("./utils/validation")
 const bcrypt = require("bcrypt")
 const validator = require("validator")
 const jwt = require("jsonwebtoken")
 require('dotenv').config();
 const cookieParser = require("cookie-parser")
+const {userAuth} = require("../src/middleware/auth")
 
 app.use(express.json());
 app.use(cookieParser());
@@ -62,9 +64,10 @@ app.post("/login", async(req,res) => {
 
             //logic of cookie and jwt token
             //create a jwt token
-            const token = await jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: "1h"})
+            //we are hinding data(_id) in the jwt
+            const token = await jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: "1d"})
             //add the token to the cookie and send it back to the user
-            res.cookie("token", token, {httpOnly: true, secure: true, maxAge: 3600000})
+            res.cookie("token", token, {httpOnly: true, secure: true, maxAge: 3600000}) 
 
 
             res.send("login successful")
@@ -100,46 +103,17 @@ app.get("/profile", async (req, res) => {
     }
 })
 
-app.get("/users", (req, res) => {
-    res.send("users");
-})
+app.post("/sendConnectionRequest",userAuth, async(req,res)=>{
+    //sendConnectionRequest logic
+    try{
 
-app.get("/users/:id", (req, res) => {
-    res.send(`user ${req.params.id}`);
-})
+        const user = req.user
+        res.send(`${user.firstName} sent the connection request`)
 
-app.delete("/users/:id", (req, res) => {
-    res.send(`user ${req.params.id} deleted`);
-})
-
-app.patch("/user/:userId", async (req, res) => {
-    const userId = req.params?.userId;
-    const updateData = req.body;
-
-    try {
-        const allowedUpdates = ["profilePicture", "bio"];
-
-        const isUpdateAllowed = Object.keys(updateData).every((key)=>
-        allowedUpdates.includes(key)
-        )
-        if(!isUpdateAllowed){
-            throw new Error ("update not allowed")
-        }
-        if(updateData?.skills > 10){
-            throw new Error("Skills can not be more than  10")
-        }
-        const user = await User.findByIdAndUpdate({_id:userId}, updateData, {
-            returnDocument:"after",
-            runValidator:true
-        });
-        console.log(user);
-        res.send("update successful");
-    } catch(err) {
-        res.status(500).send("Error updating user: " + err.message);
+    } catch (err) {
+        res.status(400).send("Error : " + err.message)
     }
 })
-
-
 
 connectDB().then(() => {
     console.log("successfully connected to db"); 
